@@ -31,31 +31,61 @@ while( count < bomCount ){
     console.log(count);
 };
 
+const directions =[
+    [-1,-1],
+    [0,-1],
+    [1,-1],
+    [1,0],
+    [1,1],
+    [0,1],
+    [-1,1],
+    [-1,0],
+  ];
+
 app.get('/board',(req,res) =>{
     // console.log("req",req)
-    let xx = req.query.x;
-    let yy = req.query.y;
-
-    board[yy][xx].opened = true;
-    board[yy][xx].number = 0;
-
+    let x = Number(req.query.x);
+    let y = Number(req.query.y);
     
-    const board2 =[];
-    board2.push(...board);
+    board[y][x].opened = true;
+    
+    let bomsNo = 0;
+    // 隣接するコマを確認するループ
 
+    for(let i=0; i<directions.length; i++){
+
+        let a= Number(directions[i][0]);
+        let b= Number(directions[i][1]);
+        let u =y+a;//隣接するx座標
+        let k =x+b;//隣接するy座標
+
+        // console.log(i,directions)
+        console.log("u",u,"k",k,"x",x,"y",y)
+
+        // 1: 爆弾があるかのチェック
+        if(u>=0 && u<=9){
+            if(board[u][k].hasBom === true){ //爆弾がある場合
+            // console.log(x,y);
+                bomsNo++;
+                console.log("bomsNo",bomsNo);
+            }
+        }
+    }
+    board[y][x].number = bomsNo;
+    
     for(let row = 0; row < width; row++){
         for(let col = 0; col < height; col++){
         // delete board2[row][col].hasBom;
-            if(board[row][col].hasBom===true){
-                if(board[yy][xx].opened === true &&  board[yy][xx].hasBom === true){
+            if(board[row][col].hasBom === true){
+                if(board[y][x].opened === true &&  board[y][x].hasBom === true){
                     delete board[row][col].hasBom;
-                    // delete board[row][col].opened;
                     board[row][col].expload=true;
-                    // board[row][col].opened=false;
                 }
             }
         }
     }
+    const board2 =[];
+    board2.push(...board);
 
     // console.log(board2)
     res.send(board2);
