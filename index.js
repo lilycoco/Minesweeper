@@ -31,6 +31,7 @@ while( count < bomCount ){
     console.log(count);
 };
 
+//置いた場所の周囲
 const directions =[
     [-1,-1],
     [0,-1],
@@ -42,20 +43,20 @@ const directions =[
     [-1,0],
   ];
 
+
 app.get('/board',(req,res) =>{
     // console.log("req",req)
     let x = Number(req.query.x);
     let y = Number(req.query.y);
+    board[y][x].opened = true; //開く
     
-    board[y][x].opened = true;
     
-    let bomsNo = 0;
     // 隣接するコマを確認するループ
-
+    let bomsNo = 0;
     for(let i=0; i<directions.length; i++){
 
-        let a= Number(directions[i][0]);
-        let b= Number(directions[i][1]);
+        let a= directions[i][0];
+        let b= directions[i][1];
         let u =y+a;//隣接するx座標
         let k =x+b;//隣接するy座標
 
@@ -71,24 +72,30 @@ app.get('/board',(req,res) =>{
             }
         }
     }
-    board[y][x].number = bomsNo;
-    
+    board[y][x].number = bomsNo; //周りにある爆弾の数を表示
+
+    const board2 =[...board];
+
+    //爆弾があるところを開いたら爆発する
     for(let row = 0; row < width; row++){
         for(let col = 0; col < height; col++){
-        // delete board2[row][col].hasBom;
             if(board[row][col].hasBom === true){
                 if(board[y][x].opened === true &&  board[y][x].hasBom === true){
                     delete board[row][col].hasBom;
                     board[row][col].expload=true;
                 }
             }
+            // delete board2[row][col].hasBom; //爆弾のある場所を隠す
         }
     }
-    const board2 =[];
-    board2.push(...board);
 
-    // console.log(board2)
+    
+
+    console.log(board2)
+    console.log(board)
+
     res.send(board2);
+
 
 });
 app.listen(8000);
