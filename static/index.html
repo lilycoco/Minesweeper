@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+    </head>
+    <body>
+        <form name="fm">
+            <input type="text" name="dat" id="name" value="">
+            <input type="button" id="save" value=" 保存 ">
+        </form>
+        <div id="app">                 
+        </div>
+        <style>
+            #app{
+                position:fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%,-50%);
+            }
+            .row{
+                overflow:hidden;
+
+            }
+            .block{
+                float:left;
+                width:30px;
+                height:30px;
+                /* border: 1px ontset rgba(255, 255, 255, 0.568); */
+                border:4px outset rgba(313, 262, 273, 1);
+                background: #ddd;
+                box-sizing: border-box;
+                overflow: hidden;
+            }
+
+            .opened{
+                box-sizing: border-box;
+                background: rgba(26, 31, -80, 0.2);
+                border: 1px solid rgba(82, 82, 87, 0.3);
+            }
+            img {
+                height: 24px;
+                margin-top: 2px;
+                /* margin-left: 5px; */
+            }
+            .i1{ margin-left: 5px;}
+            .i2{ margin-left: -19px;}
+            .i3{ margin-left: -42px;}
+            .i4{ margin-left: -66px;}
+            .i5{ margin-left: -91px;}
+            .i6{ margin-left: -115px;}
+            .i7{ margin-left: -139px;}
+            .i8{ margin-left: -163px;}
+            .opened .i9{ margin-left: -235px;}
+            .close .i9{ 
+                margin-left: -217px;
+                margin-top: 0px;
+                height: 22px;
+                }
+
+        </style>
+        <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+        <script>
+            $('#save').on("click",function(){
+                // console.log($("#name").val());
+                let str= $("#name").val();
+                localStorage.setItem( "name" , str );   //Storageに書き込み
+            });
+
+              const render = (board) => {
+                // console.log(board);
+                $('#app').empty();
+
+                let html ='';
+                board.forEach((row) =>{
+                    html +='<div class ="row">';
+                    row.forEach((block) =>{
+                        const blockClass =block.opened ? 'block opened' : 'block close';
+                        const userName = block.user || '';
+                        
+                        let number ="";
+                        if(block.number===1){
+                            number += '<img src="image/img.png" class="i1">';
+                        } else if(block.number===2){
+                            number += '<img src="image/img.png" class="i2">';
+                        } else if(block.number===3){
+                            number += '<img src="image/img.png" class="i3">';
+                        } else if(block.number===4){
+                            number += '<img src="image/img.png" class="i4">';
+                        } else if(block.number===5){
+                            number += '<img src="image/img.png" class="i5">';
+                        } else if(block.number===6){
+                            number += '<img src="image/img.png" class="i6">';
+                        } else if(block.number===7){
+                            number += '<img src="image/img.png" class="i7">';
+                        } else if(block.number===8){
+                            number += '<img src="image/img.png" class="i8">';
+                        } else{
+                            let number = '';
+                        }
+
+                        let expload ="";
+                        if(block.expload===true){
+                            expload += '<img src="image/img.png" class="i9">';
+                        } else{
+                            let expload = '';
+                        }
+
+                        html += `<div class ="${blockClass}">${expload || number }</div>`;
+                        // html += `<div class ="block${block.opened ? 'opened': ''}"/>${block.user || ''}</div>`;
+                    })
+                    html += '</div>';
+                });
+
+                $("#app").html(html);
+
+                $('.block').click(function() {
+                    // xとyを算出する
+                    const x= $(this).closest('div').index(); //縦;
+                    const y= $(this).closest('.row').index();//横
+                    const user="ryoko";
+                    console.log(x,y,this);
+
+                    $.getJSON('/board', {
+                        x: x,
+                        y: y,
+                        user: user,
+                    }, render);
+                });
+              // DOMを破棄して再構築
+              
+            };
+            
+            $.getJSON('/board', render);
+            // setInterval(() => {
+            //   // 0.5秒ごとにサーバーにポーリング
+            //   $.getJSON('/board', render);
+            // }, 500);
+
+           
+        </script>
+    </body>
+</html>
