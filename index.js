@@ -19,7 +19,7 @@ app.use(express.static('static'));//static = ディレクトリの名前 Node.js
 // });
 
 const width = 10;
-const height = 10;
+const height = 20;
 const bomCount =10;
 const board =[];
 
@@ -79,30 +79,57 @@ app.get('/board',(req,res) =>{
             let b= directions[i][1];
             let u =y+a;//隣接するy座標
             let k =x+b;//隣接するx座標
+
             let n = 1; //何回while文を回すかの数
+
+            let j =u+a;//隣接するy座標
+            let p =k+b;//隣接するx座標
             // console.log(i,directions)
+
             // console.log("u",u,"k",k,"x",x,"y",y)
 
             // 1: 爆弾があるかのチェック
-            if(u>=0 && u<=9 && k>=0 && k<=9){
+            let nextSpot =[];
+            if(u >= 0 && u < height && k >= 0 && k < width){
                 if(board[u][k].hasBom === true){ //爆弾がある場合
                     bomsNo++;
                     // console.log("bomsNo",bomsNo);
+                    // nextSpot.push([u,k]);
+                    
                 }
+
+
+
+                if(bomsNo===0){
+                    let nextBomsNo = 0;
+                    for(let q=0; q<directions.length; q++){
+                        console.log("j",j,"p",p);
+                        if(j >= 0 && j < height && p >= 0 && p < width){
+
+                            if(board[j][p].hasBom === true){ //爆弾がある場合
+                            nextBomsNo++;
+                            }
+                            if(nextBomsNo===0){
+                                // board[u][k].opened =true;
+                                console.log("nextSpot",nextSpot);
+                            }
+                        
+                        }
+                    }
+                    // console.log("nextBomsNo",nextBomsNo);
+                    
+                }
+
+
+
             }
             board[y][x].number = bomsNo; //周りにある爆弾の数を表示
             console.log( board[y][x].number);
-
-            // if(board[y][x].number === 0 ){
-            //     board[u][k].opened =true; 
-            // }
         }
-        
-        
 
         //爆弾があるところを開いたら爆発する
-        for(let row = 0; row < height; row++){
-            for(let col = 0; col < width; col++){        
+        for(let row = 0; row < width; row++){
+            for(let col = 0; col < height; col++){        
                 if(board[col][row].hasBom === true){
                     if(board[y][x].opened === true &&  board[y][x].hasBom === true){
                         board[col][row].expload = true;
@@ -113,8 +140,8 @@ app.get('/board',(req,res) =>{
     }
     
     let board2 = JSON.parse(JSON.stringify(board)); //ディープコピー
-    for(let row = 0; row < height; row++){
-        for(let col = 0; col < width; col++){
+    for(let row = 0; row < width; row++){
+        for(let col = 0; col < height; col++){
             delete board2[col][row].hasBom; //爆弾のある場所を隠す
         }
     }

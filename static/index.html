@@ -4,9 +4,10 @@
         <meta charset="UTF-8">
     </head>
     <body>
-        <form name="fm">
+        <form name="fm" id="form">
             <input type="text" name="dat" id="name" value="">
-            <input type="button" id="save" value=" 保存 ">
+            <input type="button" id="save" value=" ゲームに参加する ">
+          
         </form>
         <div id="app">                 
         </div>
@@ -31,7 +32,6 @@
                 box-sizing: border-box;
                 overflow: hidden;
             }
-
             .opened{
                 box-sizing: border-box;
                 background: rgba(26, 31, -80, 0.2);
@@ -64,6 +64,13 @@
                 // console.log($("#name").val());
                 let str= $("#name").val();
                 localStorage.setItem( "name" , str );   //Storageに書き込み
+
+                console.log(str);
+                if( str===""){
+                }else{
+                    $("#form").append(`<p>ようこそ、${str}さん</p>`)
+                }
+                
             });
 
               const render = (board) => {
