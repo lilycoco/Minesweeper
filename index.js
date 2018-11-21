@@ -63,7 +63,6 @@ while( count < bomCount ){
 //マスを開く処理
 app.get('/board',(req,res) =>{
     if(req.query.x){
-    
         // console.log("req",req)
         let x = Number(req.query.x);
         let y = Number(req.query.y);
@@ -73,18 +72,12 @@ app.get('/board',(req,res) =>{
         
         // 隣接するマスを確認するループ
         let bomsNo = 0;
-        let nextSpot =[];
-        for(let i=0; i<directions.length; i++){
 
+        for(let i=0; i<directions.length; i++){
             let a= directions[i][0];
             let b= directions[i][1];
             let u =y+a;//隣接するy座標
             let k =x+b;//隣接するx座標
-
-            let n = 1; //何回while文を回すかの数
-
-            // console.log(i,directions)
-            // console.log("u",u,"k",k,"x",x,"y",y)
 
             // 1: 爆弾があるかのチェック
             if(u >= 0 && u < height && k >= 0 && k < width){
@@ -92,48 +85,74 @@ app.get('/board',(req,res) =>{
                     bomsNo++;
                 }     
             }
-            // console.log( board[y][x].number);
+        // console.log("u",u,"k",k,"x",x,"y",y)
         }
-        console.log("nextSpot",nextSpot);
-        console.log("bomsNo",bomsNo);
+        // console.log("nextSpot",nextSpot);
+        board[y][x].number = bomsNo; //周りにある爆弾の数を表示
         if(bomsNo===0){
+            let safeZone =[];
+            let nextSafeZone =[];
             for(let i=0; i<directions.length; i++){
                 let a= directions[i][0];
                 let b= directions[i][1];
                 let u =y+a;//隣接するy座標
                 let k =x+b;//隣接するx座標
-                let nextBomsNo = 0;
                 if(u >= 0 && u < height && k >= 0 && k < width){
-
                     for(let q=0; q<directions.length; q++){
-
                         let c= directions[q][0];
                         let d= directions[q][1];
                         let j =u+c;//隣接するy座標
                         let p =k+d;//隣接するx座標
                         // console.log("j",j,"p",p);
-
                         if(j >= 0 && j < height && p >= 0 && p < width){
                             if(board[j][p].hasBom === true){ //爆弾がある場合
-                            nextBomsNo++;
-                            }                   
+                                break;
+                            }else if(q<directions.length-1){
+                                continue;
+                            }else{
+                                board[u][k].opened =true;
+                                safeZone.push([u,k]);
+                            }              
                         }
+                    // console.log("nextBomsNo",nextBomsNo);                    
                     }
-                
-
-                    if(nextBomsNo===0){
-                        board[u][k].opened =true;
-                    }
-                    // console.log("nextBomsNo",nextBomsNo);
-                    
                 }
             }
+            console.log("safeZone",safeZone)
+            for(let o=0; o<safeZone.length; o++){
+                if(safeZone[o][0] >= 0 && safeZone[o][0] < height && safeZone[o][1] >= 0 && safeZone[o][1] < width){
+                    for(let i=0; i<directions.length; i++){
+                        let a= directions[i][0];
+                        let b= directions[i][1];
+                        let u =safeZone[o][0]+a;//隣接するy座標
+                        let k =safeZone[o][1]+b;//隣接するx座標
+                        // console.log("j",j,"p",p);
+                        if(u >= 0 && u < height && k >= 0 && k < width){
+                            for(let q=0; q<directions.length; q++){
+                                let c= directions[q][0];
+                                let d= directions[q][1];
+                                let j =u+c;//隣接するy座標
+                                let p =k+d;//隣接するx座標
+
+                                if(j >= 0 && j < height && p >= 0 && p < width){
+                                    if(board[j][p].hasBom === true){ //爆弾がある場合
+                                        break;
+                                    }else if(q<directions.length-1){
+                                        continue;
+                                    }else{
+                                        board[u][k].opened =true;
+                                        nextSafeZone.push([u,k]);
+                                        
+                                    }                   
+                                }
+                            }
+                        }
+                        console.log(nextSafeZone)
+                    }
+                }
+            }
+            
         }
-
-        board[y][x].number = bomsNo; //周りにある爆弾の数を表示
-
-
-
         //爆弾があるところを開いたら爆発する
         for(let row = 0; row < width; row++){
             for(let col = 0; col < height; col++){        
