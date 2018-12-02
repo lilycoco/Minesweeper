@@ -22,6 +22,7 @@ const width = 10;
 const height = 20;
 const bomCount =10;
 const board =[];
+const face ={smile:true};
 
 //置いた場所の周囲
 const directions =[
@@ -141,13 +142,13 @@ app.get('/board',(req,res) =>{
                                         continue;
                                     }else{
                                         board[u][k].opened =true;
-                                        nextSafeZone.push([u,k]);
+                                        // nextSafeZone.push([u,k]);
                                         
                                     }                   
                                 }
                             }
                         }
-                        console.log(nextSafeZone)
+                        // console.log(nextSafeZone)
                     }
                 }
             }
@@ -159,6 +160,7 @@ app.get('/board',(req,res) =>{
                 if(board[col][row].hasBom === true){
                     if(board[y][x].opened === true &&  board[y][x].hasBom === true){
                         board[col][row].expload = true;
+                        face.smile = false;
                     }
                 }
             }
